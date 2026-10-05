@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | GNDEC Library</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navigation Bar (Shared) -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="images/logo.jpg" alt="Open Books Logo">
+                <div class="nav-brand-text">
+                    <span class="nav-brand-name">Open Books</span>
+                    <span class="nav-brand-sub">GNDEC Library</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="books.html">All Books</a>
+                <a href="contact.html" class="active">Contact</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div class="nav-icons">
+                <a href="wishlist.html" class="nav-icon-btn" title="Wishlist">❤<span class="badge wish-badge" style="display: none;">0</span></a>
+                <a href="cart.html" class="nav-icon-btn" title="Issue List">📚<span class="badge cart-badge" style="display: none;">0</span></a>
+                <button class="theme-toggle nav-icon-btn" title="Toggle Dark/Light Mode">
+                    <span class="moon">🌙</span><span class="sun">☀️</span>
+                </button>
+                <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container reveal">
+            <h1>Contact Library Admin</h1>
+            <p>Have questions about your issued books or need help finding a resource?</p>
+        </div>
+    </header>
+
+    <!-- Contact Content -->
+    <section class="form-section pt-0">
+        <div class="container">
+            
+            <!-- Contact Info Cards -->
+            <div class="contact-info reveal">
+                <div class="contact-card">
+                    <div class="icon">📍</div>
+                    <h4>Visit Us</h4>
+                    <p>GNDEC Campus, Gill Park,<br>Ludhiana, Punjab 141006</p>
+                </div>
+                <div class="contact-card">
+                    <div class="icon">📞</div>
+                    <h4>Call Us</h4>
+                    <p>+91 161 222 2222<br>Mon-Fri: 9am - 5pm</p>
+                </div>
+                <div class="contact-card">
+                    <div class="icon">✉</div>
+                    <h4>Email Us</h4>
+                    <p>library@gndec.ac.in<br>support@gndec.ac.in</p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="form-container wide reveal mx-auto" style="margin: 0 auto;">
+                <div class="form-header">
+                    <h2>Send us a Message</h2>
+                </div>
+                
+                <form id="contact-form" novalidate>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="name">Your Name / Roll No.</label>
+                            <input type="text" id="name" placeholder="e.g. John Doe (2010156)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">College Email</label>
+                            <input type="email" id="email" placeholder="john@gndec.ac.in" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject" required>
+                            <option value="">Select a topic</option>
+                            <option value="issue">Book Issue/Return Query</option>
+                            <option value="fine">Late Fee/Fine Query</option>
+                            <option value="request">Request a New Book</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="form-btn">Send Message</button>
+                </form>
+
+                <!-- Success Message -->
+                <div id="contact-success" class="form-success">
+                    <div class="icon">✓</div>
+                    <h3>Message Sent Successfully!</h3>
+                    <p>Thank you for reaching out to the GNDEC Library team. We will get back to you within 24 working hours.</p>
+                    <button class="btn-secondary" style="margin-top: 20px;" onclick="window.location.reload()">Send Another Message</button>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Footer (Shared) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; padding-top: 40px;">
+                <p>&copy; 2026 Open Books — GNDEC Library. Built with <span class="heart">❤</span> for students.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Books | GNDEC Library</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Open Books - The official library portal for Guru Nanak Dev Engineering College. Issue books, browse categories, and manage your wishlist.">
+    <meta name="keywords" content="GNDEC, Library, Books, Engineering, Open Books, Issue Book">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="images/logo.jpg" alt="Open Books Logo">
+                <div class="nav-brand-text">
+                    <span class="nav-brand-name">Open Books</span>
+                    <span class="nav-brand-sub">GNDEC Library</span>
+                </div>
+            </a>
+
+            <!-- Desktop Search -->
+            <div class="nav-search">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search books, authors..." aria-label="Search">
+            </div>
+
+            <!-- Nav Links -->
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="books.html">All Books</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html">Login</a>
+            </div>
+
+            <!-- Icons (Cart, Wishlist, Theme) -->
+            <div class="nav-icons">
+                <a href="wishlist.html" class="nav-icon-btn" title="Wishlist">
+                    ❤
+                    <span class="badge wish-badge" style="display: none;">0</span>
+                </a>
+                <a href="cart.html" class="nav-icon-btn" title="Issue List">
+                    📚
+                    <span class="badge cart-badge" style="display: none;">0</span>
+                </a>
+                <button class="theme-toggle nav-icon-btn" title="Toggle Dark/Light Mode">
+                    <span class="moon">🌙</span>
+                    <span class="sun">☀️</span>
+                </button>
+                <button class="hamburger" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-college">Guru Nanak Dev Engineering College</p>
+            <h1>Your Gateway to Infinite Stories & Knowledge</h1>
+            <p class="hero-subtitle">
+                Explore our vast collection of engineering textbooks, inspiring self-help guides, and timeless literature. Issue books online and pick them up at the library counter.
+            </p>
+            <a href="books.html" class="hero-btn">
+                Browse Library Collection <span>→</span>
+            </a>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">20k+</div>
+                    <div class="hero-stat-label">Total Books</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">5k+</div>
+                    <div class="hero-stat-label">Active Students</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">5</div>
+                    <div class="hero-stat-label">Categories</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Books Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Featured Picks</h2>
+                <p>Handpicked selections from our librarians</p>
+            </div>
+            <!-- Populated by JS -->
+            <div class="books-grid" id="featured-books"></div>
+        </div>
+    </section>
+
+    <!-- Study Books (Academic) Section -->
+    <section class="section" style="background-color: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Study Books</h2>
+                <p>Core engineering textbooks and academic resources</p>
+            </div>
+            <!-- Populated by JS -->
+            <div class="books-grid" id="study-books"></div>
+        </div>
+    </section>
+
+    <!-- Best Sellers Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Highest Rated</h2>
+                <p>The most loved and issued books by GNDEC students</p>
+            </div>
+            <!-- Populated by JS -->
+            <div class="books-grid" id="bestseller-books"></div>
+        </div>
+    </section>
+
+    <!-- New Arrivals Section -->
+    <section class="section" style="background-color: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>New Arrivals</h2>
+                <p>The latest additions to our college library</p>
+            </div>
+            <!-- Populated by JS -->
+            <div class="books-grid" id="new-arrivals"></div>
+            
+            <div class="text-center mt-3 reveal">
+                <a href="books.html" class="btn-secondary" style="margin-top: 24px;">View Entire Catalog</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Brand Info -->
+                <div class="footer-about">
+                    <div class="footer-brand">
+                        <img src="images/logo.jpg" alt="Open Books">
+                        <span class="footer-brand-name">Open Books</span>
+                    </div>
+                    <p>
+                        The official digital library portal for Guru Nanak Dev Engineering College. We provide students with easy access to academic resources, literature, and self-improvement books.
+                    </p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="books.html">Browse Books</a></li>
+                        <li><a href="login.html">Student Login</a></li>
+                        <li><a href="register.html">Register ID</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Issue Policy -->
+                <div class="footer-policy">
+                    <h4>Library Rules</h4>
+                    <p>• Max 4 books can be issued at a time.</p>
+                    <p>• Standard issue period is <span class="highlight">14 days</span>.</p>
+                    <p>• Late fee of <span class="highlight">₹5/day</span> per book.</p>
+                    <p>• ID card is mandatory for pickup.</p>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4>Contact Us</h4>
+                    <ul class="footer-links">
+                        <li style="color: var(--text-muted); margin-bottom: 12px;">📍 GNDEC Campus, Gill Park, Ludhiana, Punjab 141006</li>
+                        <li><a href="mailto:library@gndec.ac.in">✉ library@gndec.ac.in</a></li>
+                        <li><a href="tel:+911612222222">📞 +91 161 222 2222</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Open Books — GNDEC Library. Built with <span class="heart">❤</span> for students.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
+
