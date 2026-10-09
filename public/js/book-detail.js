@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
           <p class="book-detail-desc">${book.description}</p>
           <div class="book-detail-actions">
-            <a href="https://openlibrary.org/works/${book.id}" target="_blank" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none;">
+            <a href="${book.readUrl}" target="_blank" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none;">
               📖 Read Online
             </a>
             <button class="btn-secondary" id="wishlist-btn" onclick="toggleDetailWishlist('${book.id}')">

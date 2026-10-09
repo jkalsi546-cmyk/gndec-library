@@ -19,7 +19,7 @@ function renderWishlist() {
       <div class="cart-empty">
         <div class="icon">🤍</div>
         <h3>Your Wishlist is Empty</h3>
-        <p>Save books here that you'd like to issue later.</p>
+        <p>Save books here that you'd like to read later.</p>
         <a href="books.html" class="btn-browse">📚 Browse Books</a>
       </div>
     `;
@@ -27,7 +27,6 @@ function renderWishlist() {
   }
 
   const itemsHtml = wishlist.map(book => {
-    // Inject the book into the current map so it can be added to cart from this page
     window.currentBooksMap[book.id] = book;
 
     return `
@@ -47,16 +46,10 @@ function renderWishlist() {
             ${generateStars(book.rating)}
             <span class="rating-value">${book.rating}</span>
           </div>
-          <div class="book-card-footer">
-            <span class="book-card-price">${formatPrice(book.price)}</span>
-            <span class="book-card-copies ${book.copies === 0 ? 'unavailable' : ''}">
-              ${book.copies > 0 ? book.copies + ' copies' : 'Unavailable'}
-            </span>
-          </div>
-          <div class="wishlist-actions">
-            <button class="btn-move-cart" onclick="moveToCart('${book.id}')" ${book.copies === 0 ? 'disabled' : ''}>
-              Issue Book
-            </button>
+          <div class="wishlist-actions" style="margin-top: 12px; display: flex; gap: 8px;">
+            <a href="book-detail.html?id=${book.id}" class="btn-primary" style="flex: 1; background: var(--accent); color: white; border: none; text-decoration: none; text-align: center; padding: 10px 0; border-radius: 4px;">
+              📖 Read Online
+            </a>
             <button class="btn-remove-wish" onclick="removeFromWishlistPage('${book.id}')" aria-label="Remove">
               ✕
             </button>
@@ -79,10 +72,5 @@ function removeFromWishlistPage(bookId) {
   wishlist = wishlist.filter(b => b.id !== bookId && b.id !== String(bookId));
   saveWishlist(wishlist);
   showToast('Book removed from wishlist', 'success');
-  renderWishlist(); // Re-render page
-}
-
-function moveToCart(bookId) {
-  addToCart(bookId); // From main.js
-  removeFromWishlistPage(bookId);
+  renderWishlist();
 }

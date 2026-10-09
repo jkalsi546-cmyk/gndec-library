@@ -354,7 +354,7 @@ function generateBookCard(book) {
           <span class="rating-value">${book.rating}</span>
         </div>
         <div class="book-card-footer" style="justify-content: center; margin-top: 10px;">
-          <a href="https://openlibrary.org/works/${book.id}" target="_blank" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none; display: block; width: 100%; text-align: center; padding: 10px 0; border-radius: 4px;">
+          <a href="book-detail.html?id=${book.id}" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none; display: block; width: 100%; text-align: center; padding: 10px 0; border-radius: 4px;">
             📖 Read Online
           </a>
         </div>

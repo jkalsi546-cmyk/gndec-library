@@ -127,12 +127,41 @@ async function fetchBookDetails(id) {
         ? workData.description 
         : workData.description.value;
     }
+
+    // Try to find a readable edition via the availability API
+    let readUrl = null;
+    try {
+      const availRes = await fetch(`${API_BASE}/works/${id}/editions.json?limit=5`);
+      if (availRes.ok) {
+        const availData = await availRes.json();
+        if (availData.entries && availData.entries.length > 0) {
+          // Find an edition with an IA identifier (Internet Archive)
+          for (const edition of availData.entries) {
+            if (edition.ocaid) {
+              readUrl = `https://archive.org/details/${edition.ocaid}`;
+              break;
+            }
+          }
+          // Fallback: use the first edition's key for borrowing
+          if (!readUrl) {
+            const edKey = availData.entries[0].key;
+            readUrl = `${API_BASE}${edKey}`;
+          }
+        }
+      }
+    } catch (e) {
+      console.log('Could not fetch editions:', e);
+    }
+
+    // Final fallback
+    if (!readUrl) {
+      readUrl = `${API_BASE}/works/${id}`;
+    }
     
     return {
       id: id,
       title: workData.title,
       author: authorName,
-      
       rating: getMockRating(id),
       category: workData.subjects ? workData.subjects[0] : 'General',
       description: description,
@@ -140,10 +169,7 @@ async function fetchBookDetails(id) {
         ? `${COVERS_BASE}/${workData.covers[0]}-L.jpg` 
         : 'images/logo.jpg',
       copies: 3 + (Math.abs(getMockPrice(id)) % 5),
-      reviews: [
-        { name: "Student 1", rating: 5, comment: "Excellent resource!" },
-        { name: "Student 2", rating: 4, comment: "Very helpful for my coursework." }
-      ]
+      readUrl: readUrl
     };
   } catch (error) {
     console.error('Error fetching book details:', error);
