@@ -37,6 +37,18 @@ db.serialize(() => {
     )
   `);
 
-  
+  // Reviews Table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER NOT NULL,
+      bookId TEXT NOT NULL,
+      rating INTEGER NOT NULL,
+      comment TEXT,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    )
+  `);
+});
 
 module.exports = db;
