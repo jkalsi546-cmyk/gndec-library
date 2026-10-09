@@ -61,19 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             ${generateStars(book.rating)}
             <span class="rating-text">${book.rating} out of 5 (${reviews.length} reviews)</span>
           </div>
-          <div class="book-detail-price">${formatPrice(book.price)}</div>
-          <p class="book-detail-copies">
-            Availability: 
-            ${book.copies > 0
-              ? `<span class="available">${book.copies} copies available</span>`
-              : `<span class="unavailable">Currently unavailable</span>`
-            }
-          </p>
           <p class="book-detail-desc">${book.description}</p>
           <div class="book-detail-actions">
-            <button class="btn-primary" onclick="addToCart('${book.id}')" ${book.copies === 0 ? 'disabled' : ''}>
-              📚 Issue This Book
-            </button>
             <a href="https://openlibrary.org/works/${book.id}" target="_blank" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none;">
               📖 Read Online
             </a>

@@ -46,7 +46,7 @@ function formatBook(doc, defaultCategory = 'General') {
     id: id,
     title: doc.title || 'Unknown Title',
     author: doc.author_name ? doc.author_name[0] : 'Unknown Author',
-    price: getMockPrice(id),
+    
     rating: getMockRating(id),
     category: doc.subject ? doc.subject[0] : defaultCategory,
     description: doc.first_sentence ? (typeof doc.first_sentence === 'string' ? doc.first_sentence : doc.first_sentence.value) : 'A fascinating book available at the GNDEC library.',
@@ -132,7 +132,7 @@ async function fetchBookDetails(id) {
       id: id,
       title: workData.title,
       author: authorName,
-      price: getMockPrice(id),
+      
       rating: getMockRating(id),
       category: workData.subjects ? workData.subjects[0] : 'General',
       description: description,

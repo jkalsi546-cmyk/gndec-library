@@ -37,31 +37,6 @@ db.serialize(() => {
     )
   `);
 
-  // Cart / Issued Books Table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS cart (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER NOT NULL,
-      bookId TEXT NOT NULL,
-      bookData TEXT NOT NULL,
-      quantity INTEGER DEFAULT 1,
-      FOREIGN KEY (userId) REFERENCES users(id),
-      UNIQUE(userId, bookId)
-    )
-  `);
-
-  // Reviews Table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS reviews (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER NOT NULL,
-      bookId TEXT NOT NULL,
-      rating INTEGER NOT NULL,
-      comment TEXT,
-      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (userId) REFERENCES users(id)
-    )
-  `);
-});
+  
 
 module.exports = db;

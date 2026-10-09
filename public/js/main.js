@@ -187,17 +187,12 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
 // Global sync function called on load and after login
 window.syncUserData = async function() {
   if (!getToken()) return;
-  const [cart, wishlist] = await Promise.all([
-    apiRequest('cart'),
-    apiRequest('wishlist')
-  ]);
+  const wishlist = await apiRequest('wishlist');
   
-  if (cart) localStorage.setItem('openbooks-cart-v2', JSON.stringify(cart));
   if (wishlist) localStorage.setItem('openbooks-wishlist-v2', JSON.stringify(wishlist));
   updateBadges();
   
-  // Re-render if we are on cart or wishlist pages
-  if (window.location.pathname.includes('cart.html') && typeof renderCart === 'function') renderCart();
+  // Re-render if we are on wishlist page
   if (window.location.pathname.includes('wishlist.html') && typeof renderWishlist === 'function') renderWishlist();
 };
 
@@ -218,7 +213,6 @@ function updateAuthUI() {
       link.onclick = (e) => {
         e.preventDefault();
         localStorage.removeItem('openbooks_token');
-        localStorage.removeItem('openbooks-cart-v2');
         localStorage.removeItem('openbooks-wishlist-v2');
         showToast('Logged out successfully', 'success');
         setTimeout(() => window.location.href = 'index.html', 1000);
@@ -237,59 +231,9 @@ updateAuthUI();
 /* ========================================
  * GLOBAL BOOK MAP
  * Temporarily stores book data for currently
- * displayed books so cart/wishlist can access them.
+ * displayed books so wishlist can access them.
  * ======================================== */
 window.currentBooksMap = {};
-
-/* ========================================
- * CART FUNCTIONS
- * Uses localStorage to persist cart data.
- * Cart items stored as: { book: Object, quantity: number }
- * ======================================== */
-
-function getCart() {
-  return JSON.parse(localStorage.getItem('openbooks-cart-v2')) || [];
-}
-
-function saveCart(cart) {
-  localStorage.setItem('openbooks-cart-v2', JSON.stringify(cart));
-  updateBadges();
-}
-
-function addToCart(bookId) {
-  const cart = getCart();
-  const existing = cart.find(item => item.book.id === bookId || item.book.id === String(bookId));
-  const book = window.currentBooksMap[bookId];
-
-  if (existing) {
-    existing.quantity += 1;
-    if (getToken() && book) apiRequest('cart', 'POST', { book, change: 1 });
-  } else {
-    if (book) {
-      cart.push({ book: book, quantity: 1 });
-      if (getToken()) apiRequest('cart', 'POST', { book, change: 1 });
-    }
-  }
-
-  saveCart(cart);
-  showToast('Book added to cart! 📚', 'success');
-}
-
-function removeFromCart(bookId) {
-  let cart = getCart();
-  const book = window.currentBooksMap[bookId] || cart.find(i => i.book.id === bookId || i.book.id === String(bookId))?.book;
-  cart = cart.filter(item => item.book.id !== bookId && item.book.id !== String(bookId));
-  saveCart(cart);
-  
-  if (getToken() && book) {
-    apiRequest('cart', 'POST', { book, change: -99 }); // negative number to remove
-  }
-}
-
-function getCartCount() {
-  const cart = getCart();
-  return cart.reduce((sum, item) => sum + item.quantity, 0);
-}
 
 /* ========================================
  * WISHLIST FUNCTIONS
@@ -338,12 +282,7 @@ function isInWishlist(bookId) {
  * ======================================== */
 function updateBadges() {
   // Update cart badge
-  const cartBadges = document.querySelectorAll('.cart-badge');
-  const cartCount = getCartCount();
-  cartBadges.forEach(badge => {
-    badge.textContent = cartCount;
-    badge.style.display = cartCount > 0 ? 'flex' : 'none';
-  });
+  
 
   // Update wishlist badge
   const wishBadges = document.querySelectorAll('.wish-badge');
@@ -414,13 +353,11 @@ function generateBookCard(book) {
           ${generateStars(book.rating)}
           <span class="rating-value">${book.rating}</span>
         </div>
-        <div class="book-card-footer">
-          <span class="book-card-price">${formatPrice(book.price)}</span>
-          <span class="book-card-copies ${book.copies === 0 ? 'unavailable' : ''}">${book.copies > 0 ? book.copies + ' copies' : 'Unavailable'}</span>
+        <div class="book-card-footer" style="justify-content: center; margin-top: 10px;">
+          <a href="https://openlibrary.org/works/${book.id}" target="_blank" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none; display: block; width: 100%; text-align: center; padding: 10px 0; border-radius: 4px;">
+            📖 Read Online
+          </a>
         </div>
-        <button class="btn-add-cart" onclick="addToCart('${book.id}')" ${book.copies === 0 ? 'disabled' : ''}>
-          📚 Issue Book
-        </button>
       </div>
     </article>
   `;
