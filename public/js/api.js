@@ -106,56 +106,48 @@ async function fetchBooksByCategory(category, limit = 12) {
  */
 async function fetchBookDetails(id) {
   try {
-    // We need both the basic details and the author details
+    // Fetch work details first (we need it to get author key)
     const workRes = await fetch(`${API_BASE}/works/${id}.json`);
     if (!workRes.ok) throw new Error('Work not found');
     const workData = await workRes.json();
-    
-    let authorName = 'Unknown Author';
-    if (workData.authors && workData.authors.length > 0) {
-      const authorKey = workData.authors[0].author.key;
-      const authorRes = await fetch(`${API_BASE}${authorKey}.json`);
-      if (authorRes.ok) {
-        const authorData = await authorRes.json();
-        authorName = authorData.name;
-      }
-    }
+
+    // Now run author + editions fetches IN PARALLEL
+    const authorKey = workData.authors && workData.authors.length > 0 
+      ? workData.authors[0].author.key : null;
+
+    const [authorName, readUrl] = await Promise.all([
+      // Author fetch
+      (async () => {
+        if (!authorKey) return 'Unknown Author';
+        try {
+          const res = await fetch(`${API_BASE}${authorKey}.json`);
+          if (res.ok) { const d = await res.json(); return d.name; }
+        } catch(e) {}
+        return 'Unknown Author';
+      })(),
+      // Editions fetch (find readable URL)
+      (async () => {
+        try {
+          const res = await fetch(`${API_BASE}/works/${id}/editions.json?limit=5`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.entries && data.entries.length > 0) {
+              for (const ed of data.entries) {
+                if (ed.ocaid) return `https://archive.org/details/${ed.ocaid}`;
+              }
+              return `${API_BASE}${data.entries[0].key}`;
+            }
+          }
+        } catch(e) {}
+        return `${API_BASE}/works/${id}`;
+      })()
+    ]);
     
     let description = 'No description available for this book.';
     if (workData.description) {
       description = typeof workData.description === 'string' 
         ? workData.description 
         : workData.description.value;
-    }
-
-    // Try to find a readable edition via the availability API
-    let readUrl = null;
-    try {
-      const availRes = await fetch(`${API_BASE}/works/${id}/editions.json?limit=5`);
-      if (availRes.ok) {
-        const availData = await availRes.json();
-        if (availData.entries && availData.entries.length > 0) {
-          // Find an edition with an IA identifier (Internet Archive)
-          for (const edition of availData.entries) {
-            if (edition.ocaid) {
-              readUrl = `https://archive.org/details/${edition.ocaid}`;
-              break;
-            }
-          }
-          // Fallback: use the first edition's key for borrowing
-          if (!readUrl) {
-            const edKey = availData.entries[0].key;
-            readUrl = `${API_BASE}${edKey}`;
-          }
-        }
-      }
-    } catch (e) {
-      console.log('Could not fetch editions:', e);
-    }
-
-    // Final fallback
-    if (!readUrl) {
-      readUrl = `${API_BASE}/works/${id}`;
     }
     
     return {

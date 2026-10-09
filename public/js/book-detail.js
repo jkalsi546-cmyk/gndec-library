@@ -19,11 +19,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    // Show loading
+    // Show loading skeleton
     detailContent.innerHTML = `
-      <div style="text-align: center; padding: 100px 0;">
-          <p style="color: var(--text-muted); font-size: 1.2rem;">Fetching book details from library database...</p>
+      <div class="book-detail-grid">
+        <div class="book-detail-image" style="background: var(--bg-secondary); border-radius: 12px; min-height: 400px; animation: pulse 1.5s ease-in-out infinite;"></div>
+        <div class="book-detail-info">
+          <div style="background: var(--bg-secondary); height: 20px; width: 100px; border-radius: 4px; margin-bottom: 12px; animation: pulse 1.5s ease-in-out infinite;"></div>
+          <div style="background: var(--bg-secondary); height: 32px; width: 80%; border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+          <div style="background: var(--bg-secondary); height: 16px; width: 40%; border-radius: 4px; margin-bottom: 16px; animation: pulse 1.5s ease-in-out infinite;"></div>
+          <div style="background: var(--bg-secondary); height: 14px; width: 100%; border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+          <div style="background: var(--bg-secondary); height: 14px; width: 90%; border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+          <div style="background: var(--bg-secondary); height: 14px; width: 70%; border-radius: 4px; margin-bottom: 24px; animation: pulse 1.5s ease-in-out infinite;"></div>
+          <div style="background: var(--bg-secondary); height: 44px; width: 200px; border-radius: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+        </div>
       </div>
+      <style>@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }</style>
     `;
 
     // Fetch book details and reviews concurrently
