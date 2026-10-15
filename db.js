@@ -13,17 +13,29 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Initialize database tables
 db.serialize(() => {
-  // Users Table
+  // Users Table (Simple Email Authentication)
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      rollNumber TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Auto-migration: if existing database has rollNumber, drop rollNumber constraint
+  db.all('PRAGMA table_info(users)', (err, columns) => {
+    if (columns && columns.some(c => c.name === 'rollNumber' && c.notnull === 1)) {
+      db.serialize(() => {
+        db.run('CREATE TABLE IF NOT EXISTS users_clean (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, createdAt DATETIME DEFAULT CURRENT_TIMESTAMP)');
+        db.run('INSERT OR IGNORE INTO users_clean (id, name, email, password, createdAt) SELECT id, name, email, password, createdAt FROM users');
+        db.run('DROP TABLE users');
+        db.run('ALTER TABLE users_clean RENAME TO users');
+        console.log('Migrated users table to simple email authentication.');
+      });
+    }
+  });
 
   // Wishlist Table
   db.run(`
