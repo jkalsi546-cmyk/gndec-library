@@ -2,23 +2,35 @@
  * ============================================================
  * BOOK-DETAIL.JS — Open Books (GNDEC Library)
  * ============================================================
- * Fetches single book details from the API.
+ * Fetches and displays book details and student reviews.
  * ============================================================
  */
 
-document.addEventListener('DOMContentLoaded', async () => {
-
+async function loadBookDetailPage() {
   const urlParams = new URLSearchParams(window.location.search);
-  const bookId = urlParams.get('id');
-
+  const rawId = urlParams.get('id');
   const detailContent = document.getElementById('book-detail-content');
 
-  if (!bookId) {
+  if (!rawId || !detailContent) {
     showError();
     return;
   }
 
+  const bookId = String(rawId).replace(/^\/?works\//, '').replace(/\.json$/, '');
+
+  // 1. Check if we have instant preview in sessionStorage
+  let previewData = null;
   try {
+    const rawPreview = sessionStorage.getItem(`book_preview_${bookId}`);
+    if (rawPreview) {
+      previewData = JSON.parse(rawPreview);
+    }
+  } catch (e) {}
+
+  // If preview is available, render immediately so user sees NO blank screen or delay!
+  if (previewData) {
+    renderBook(previewData, [], true);
+  } else {
     // Show loading skeleton
     detailContent.innerHTML = `
       <div class="book-detail-grid">
@@ -35,28 +47,52 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
       <style>@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }</style>
     `;
+  }
 
-    // Fetch book details and reviews concurrently
-    const [book, reviewsRes] = await Promise.all([
+  try {
+    // Fetch full book details and reviews in parallel
+    const [book, reviews] = await Promise.all([
       fetchBookDetails(bookId),
-      fetch(`/api/reviews/${bookId}`)
+      fetchReviews(bookId)
     ]);
 
-    if (!book) {
+    if (!book && !previewData) {
       showError();
       return;
     }
-    
-    let reviews = [];
-    if (reviewsRes.ok) {
-      reviews = await reviewsRes.json();
-    }
 
-    // Add to global map so Add to Cart works
+    const finalBook = book || {
+      ...previewData,
+      readUrl: `https://openlibrary.org/works/${bookId}`
+    };
+
+    renderBook(finalBook, reviews, false);
+  } catch (err) {
+    console.error('Error loading details:', err);
+    if (!previewData) {
+      showError();
+    }
+  }
+
+  async function fetchReviews(id) {
+    try {
+      const res = await fetch(`/api/reviews/${id}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn('Reviews could not be loaded:', e);
+    }
+    return [];
+  }
+
+  function renderBook(book, reviews = [], isPreviewOnly = false) {
+    if (!window.currentBooksMap) window.currentBooksMap = {};
     window.currentBooksMap[book.id] = book;
 
     document.title = `${book.title} — Open Books | GNDEC Library`;
-    const inWishlist = isInWishlist(book.id);
+    const inWishlist = typeof isInWishlist === 'function' ? isInWishlist(book.id) : false;
+    const readUrl = book.readUrl || `https://openlibrary.org/works/${book.id}`;
 
     detailContent.innerHTML = `
       <div class="book-detail-grid">
@@ -64,23 +100,23 @@ document.addEventListener('DOMContentLoaded', async () => {
           <img src="${book.image}" alt="${book.title} by ${book.author}" onerror="this.src='images/logo.jpg'">
         </div>
         <div class="book-detail-info">
-          <span class="book-detail-category">${book.category}</span>
+          <span class="book-detail-category">${book.category || 'General'}</span>
           <h1 class="book-detail-title">${book.title}</h1>
           <p class="book-detail-author">by <span>${book.author}</span></p>
           <div class="book-detail-rating">
-            ${generateStars(book.rating)}
-            <span class="rating-text">${book.rating} out of 5 (${reviews.length} reviews)</span>
+            ${typeof generateStars === 'function' ? generateStars(book.rating) : '⭐⭐⭐⭐'}
+            <span class="rating-text">${book.rating || '4.5'} out of 5 (${reviews.length} reviews)</span>
           </div>
-          <p class="book-detail-desc">${book.description}</p>
+          <p class="book-detail-desc">${book.description || 'Digital edition available through GNDEC library catalog.'}</p>
           <div class="book-detail-actions">
-            <a href="${book.readUrl}" target="_blank" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none;">
-              📖 Read Online
+            <a href="${readUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background: var(--accent); color: white; border: none; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+              📖 Read Online Free
             </a>
-            <button class="btn-secondary" id="wishlist-btn" onclick="toggleDetailWishlist('${book.id}')">
+            <button class="btn-secondary" id="wishlist-btn" onclick="toggleDetailWishlist('${book.id}')" style="padding: 12px 20px; border-radius: 6px;">
               ${inWishlist ? '❤ In Wishlist' : '🤍 Add to Wishlist'}
             </button>
           </div>
-          <div class="reviews-section">
+          <div class="reviews-section" style="margin-top: 32px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
               <h3 style="margin: 0;">Student Reviews (${reviews.length})</h3>
             </div>
@@ -107,12 +143,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             <div id="reviews-list">
               ${reviews.length > 0 ? reviews.map(review => `
-                <div class="review-card">
-                  <div class="review-header">
-                    <span class="review-name">${review.userName}</span>
-                    ${generateStars(review.rating)}
+                <div class="review-card" style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                  <div class="review-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span class="review-name" style="font-weight: 600;">${review.userName || 'Student'}</span>
+                    ${typeof generateStars === 'function' ? generateStars(review.rating) : '⭐'}
                   </div>
-                  <p class="review-comment">${review.comment}</p>
+                  <p class="review-comment" style="margin: 0; color: var(--text-muted);">${review.comment}</p>
                 </div>
               `).join('') : '<p style="color: var(--text-muted); font-size: 0.95rem;">No reviews yet. Be the first to review this book!</p>'}
             </div>
@@ -120,63 +156,73 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       </div>
     `;
-    
-    // Attach review form event listener
+
+    // Attach review form listener
     const reviewForm = document.getElementById('review-form');
-    reviewForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const token = localStorage.getItem('openbooks_token');
-      if (!token) {
-        document.getElementById('review-error').innerText = 'Please login to post a review.';
-        return;
-      }
-      
-      const rating = document.getElementById('review-rating').value;
-      const comment = document.getElementById('review-comment').value;
-      
-      try {
-        const res = await fetch(`/api/reviews/${bookId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': \`Bearer \${token}\`
-          },
-          body: JSON.stringify({ rating, comment })
-        });
-        
-        if (res.ok) {
-          window.location.reload(); // Quickest way to show the new review
-        } else {
-          const data = await res.json();
-          document.getElementById('review-error').innerText = data.error || 'Failed to post review.';
+    if (reviewForm) {
+      reviewForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('openbooks_token');
+        if (!token) {
+          const errBox = document.getElementById('review-error');
+          if (errBox) errBox.innerText = 'Please login to post a review.';
+          return;
         }
-      } catch (err) {
-        document.getElementById('review-error').innerText = 'Network error. Please try again.';
-      }
-    });
-    
-  } catch (error) {
-    console.error(error);
-    showError();
+
+        const rating = document.getElementById('review-rating').value;
+        const comment = document.getElementById('review-comment').value;
+
+        try {
+          const res = await fetch(`/api/reviews/${book.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ rating, comment })
+          });
+
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            const data = await res.json();
+            const errBox = document.getElementById('review-error');
+            if (errBox) errBox.innerText = data.error || 'Failed to post review.';
+          }
+        } catch (err) {
+          const errBox = document.getElementById('review-error');
+          if (errBox) errBox.innerText = 'Network error. Please try again.';
+        }
+      });
+    }
   }
 
   function showError() {
     detailContent.innerHTML = `
       <div class="no-results" style="padding: 80px 20px; text-align: center;">
-        <div class="icon">📚</div>
+        <div class="icon" style="font-size: 3rem; margin-bottom: 16px;">📚</div>
         <h3>Book Not Found</h3>
-        <p>The book you're looking for doesn't exist in our library database.</p>
-        <a href="books.html" class="btn-browse" style="margin-top: 20px;">Browse All Books</a>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">The book you're looking for doesn't exist or could not be reached.</p>
+        <a href="books.html" class="btn-browse" style="display: inline-block; padding: 10px 20px; background: var(--accent); color: white; border-radius: 6px; text-decoration: none;">Browse Catalog</a>
       </div>
     `;
   }
-});
+}
 
 function toggleDetailWishlist(bookId) {
-  toggleWishlist(bookId);
-  const btn = document.getElementById('wishlist-btn');
-  if (btn) {
-    const inWishlist = isInWishlist(bookId);
-    btn.innerHTML = inWishlist ? '❤ In Wishlist' : '🤍 Add to Wishlist';
+  if (typeof toggleWishlist === 'function') {
+    toggleWishlist(bookId);
+    const btn = document.getElementById('wishlist-btn');
+    if (btn && typeof isInWishlist === 'function') {
+      const inWishlist = isInWishlist(bookId);
+      btn.innerHTML = inWishlist ? '❤ In Wishlist' : '🤍 Add to Wishlist';
+    }
   }
+}
+
+// Ensure execution immediately or upon DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadBookDetailPage);
+} else {
+  loadBookDetailPage();
 }

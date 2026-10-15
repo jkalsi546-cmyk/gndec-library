@@ -62,10 +62,20 @@
             
             <!-- Book Details Container (Populated by JS) -->
             <div id="book-detail-content">
-                <!-- Loading State placeholder -->
-                <div style="text-align: center; padding: 100px 0;">
-                    <p style="color: var(--text-muted); font-size: 1.2rem;">Loading book details...</p>
+                <!-- Loading Skeleton -->
+                <div class="book-detail-grid">
+                    <div class="book-detail-image" style="background: var(--bg-secondary); border-radius: 12px; min-height: 400px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                    <div class="book-detail-info">
+                        <div style="background: var(--bg-secondary); height: 20px; width: 100px; border-radius: 4px; margin-bottom: 12px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                        <div style="background: var(--bg-secondary); height: 32px; width: 80%; border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                        <div style="background: var(--bg-secondary); height: 16px; width: 40%; border-radius: 4px; margin-bottom: 16px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                        <div style="background: var(--bg-secondary); height: 14px; width: 100%; border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                        <div style="background: var(--bg-secondary); height: 14px; width: 90%; border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                        <div style="background: var(--bg-secondary); height: 14px; width: 70%; border-radius: 4px; margin-bottom: 24px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                        <div style="background: var(--bg-secondary); height: 44px; width: 200px; border-radius: 8px; animation: pulse 1.5s ease-in-out infinite;"></div>
+                    </div>
                 </div>
+                <style>@keyframes pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 0.75; } }</style>
             </div>
         </div>
     </section>
@@ -91,11 +101,11 @@
                     </ul>
                 </div>
                 <div class="footer-policy">
-                    <h4>Library Rules</h4>
-                    <p>• Max 4 books can be issued at a time.</p>
-                    <p>• Standard issue period is <span class="highlight">14 days</span>.</p>
-                    <p>• Late fee of <span class="highlight">₹5/day</span> per book.</p>
-                    <p>• ID card is mandatory for pickup.</p>
+                    <h4>Digital Library Rules</h4>
+                    <p>• Read millions of books online completely <span class="highlight">free</span>.</p>
+                    <p>• No borrowing limits or return deadlines.</p>
+                    <p>• Powered by Open Library & Internet Archive.</p>
+                    <p>• Save favorite titles to your <span class="highlight">Wishlist</span>.</p>
                 </div>
                 <div>
                     <h4>Contact Us</h4>
