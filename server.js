@@ -14,8 +14,16 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static frontend files from 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static frontend files from 'public' directory with no-cache headers
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  maxAge: 0,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html') || filePath.endsWith('.js')) {
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    }
+  }
+}));
 
 // API Routes
 app.use('/api/auth', authRoutes);
